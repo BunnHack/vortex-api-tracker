@@ -1,0 +1,45 @@
+name: vortex-api-track
+
+on:
+  schedule:
+    # daily at 06:00 UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch, analyze and diff the scripting API
+        env:
+          VORTEX_USER: ${{ secrets.VORTEX_USER }}
+          VORTEX_PASSWORD: ${{ secrets.VORTEX_PASSWORD }}
+        run: |
+          bash bin/track.sh
+
+      - name: Commit snapshot if changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "vortex-bot"
+          git config user.email "vortex-bot@users.noreply.github.com"
+          # track.sh already commits; just make sure any pending change lands
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -q -m "chore: automated API snapshot [skip ci]"
+            git push
+          fi
