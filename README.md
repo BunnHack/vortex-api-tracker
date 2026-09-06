@@ -1,5 +1,7 @@
 # Vortex API Tracker
 
+**Live report:** https://bunnhack.github.io/vortex-api-tracker/
+
 Watches the **Vortex Studio scripting API** for changes across releases.
 
 Each run logs into playvortex.io, downloads `Studio-windows` (`VortexStudio.exe`),
@@ -41,6 +43,7 @@ Settings → Secrets and variables → Actions.
 ## Layout
 
 ```
+index.html + snapshot.js      GitHub Pages report (auto-deployed via pages.yml)
 bin/fetch.py             login + download studio-windows zip, extract the PE
 bin/extract_registry.py  PE → scripting-API JSON (classes/methods/events/types)
 bin/diff.py              ADDED / REMOVED between two snapshots

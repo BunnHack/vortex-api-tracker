@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vortex API Tracker</title>
+    <style>
+      :root {
+        --bg: #0b0e13;
+        --panel: #141922;
+        --panel2: #1b2130;
+        --border: #262f42;
+        --text: #e6ebf4;
+        --muted: #8b96ab;
+        --accent: #0ea5a3;
+        --add: #34d399;
+        --del: #fb7185;
+        --ser: #fbbf24;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--text);
+        font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      header {
+        padding: 22px 28px; border-bottom: 1px solid var(--border);
+        display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+      }
+      h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
+      .ver { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+      .sub { color: var(--muted); font-size: 12.5px; margin-left: auto; }
+      main { padding: 22px 28px; display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+      .card {
+        background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+        padding: 14px 16px; min-width: 0;
+      }
+      .card h2 {
+        margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .6px;
+        color: var(--muted); display: flex; align-items: center; justify-content: space-between;
+      }
+      .count { background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; font-size: 11px; color: var(--text); }
+      .row {
+        display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px;
+      }
+      .row:hover { background: var(--panel2); }
+      .row .name { font-weight: 600; }
+      .row .sub { margin-left: auto; font-size: 11px; }
+      .tag {
+        font-size: 10px; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border);
+      }
+      .tag.svc { color: var(--ser); border-color: rgba(251,191,36,.35); }
+      .tag.meth { color: #c4b5fd; border-color: rgba(196,181,253,.3); }
+      .tag.evt { color: #7dd3fc; border-color: rgba(125,211,252,.3); }
+      .member { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #cbd5e1; }
+      .list { max-height: 420px; overflow: auto; }
+      .legend { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
+      code { background: var(--panel2); padding: 1px 5px; border-radius: 4px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Vortex API Tracker</h1>
+      <span class="ver" id="ver">—</span>
+      <span class="sub">scripting registry auto-extracted from <code>VortexStudio.exe</code></span>
+    </header>
+
+    <main>
+      <div class="card">
+        <h2>Services <span class="count" id="svcCount"></span></h2>
+        <div class="list" id="services"></div>
+      </div>
+
+      <div class="card">
+        <h2>Classes <span class="count" id="clsCount"></span></h2>
+        <div class="list" id="classes"></div>
+      </div>
+
+      <div class="card">
+        <h2>Data Types <span class="count" id="typeCount"></span></h2>
+        <div class="list" id="types"></div>
+      </div>
+
+      <div class="card">
+        <h2>Enums <span class="count" id="enumCount"></span></h2>
+        <div class="list" id="enums"></div>
+      </div>
+    </main>
+
+    <script src="snapshot.js"></script>
+    <script>
+      const snap = window.VORTEX_SNAPSHOT;
+
+      document.getElementById('ver').textContent =
+        (snap.version && snap.version.engine) || 'engine —';
+
+      const svc = snap.services || [];
+      document.getElementById('svcCount').textContent = svc.length;
+      document.getElementById('services').innerHTML =
+        svc.map(s => `<div class="row"><span class="name">${s}</span><span class="tag svc">service</span></div>`).join('');
+
+      const classes = snap.classes || [];
+      document.getElementById('clsCount').textContent = classes.length;
+      document.getElementById('classes').innerHTML = classes.map(c => {
+        const isSvc = (snap.services || []).includes(c.name);
+        const meth = (c.methods || []).map(m => `<span class="tag meth member">${m}</span>`).join(' ');
+        const evt = (c.events || []).map(e => `<span class="tag evt member">${e}</span>`).join(' ');
+        return `<div class="row"><span class="name">${c.name}</span>` +
+               (isSvc ? '<span class="tag svc">svc</span>' : '') + `</div>` +
+               (meth ? `<div class="row"><span style="width:8px"></span>${meth}</div>` : '') +
+               (evt ? `<div class="row"><span style="width:8px"></span>${evt}</div>` : '');
+      }).join('');
+
+      const types = snap.datatypes || [];
+      document.getElementById('typeCount').textContent = types.length;
+      document.getElementById('types').innerHTML = types.map(t => {
+        const cs = (t.constructors || []).map(c=>`${c}()`).join(' · ');
+        const ms = (t.methods || []).map(m=>`<span class="tag meth member">${m}</span>`).join(' ');
+        const ps = (t.properties || []).map(p=>`<span class="tag evt member">${p}</span>`).join(' ');
+        return `<div class="row"><span class="name">${t.name}</span></div>` +
+               (cs?`<div class="row"><span style="width:8px"></span><span class="member">${cs}</span></div>`:'') +
+               (ms?`<div class="row"><span style="width:8px"></span>${ms}</div>`:'') +
+               (ps?`<div class="row"><span style="width:8px"></span>${ps}</div>`:'');
+      }).join('');
+
+      const enums = Object.entries(snap.enum || {});
+      document.getElementById('enumCount').textContent = enums.length;
+      document.getElementById('enums').innerHTML = enums.map(([name, vals]) =>
+        `<div class="row"><span class="name">${name}</span></div>` +
+        `<div class="row"><span style="width:8px"></span><span class="member">${vals.join(', ')}</span></div>`
+      ).join('');
+    </script>
+  </body>
+</html>
