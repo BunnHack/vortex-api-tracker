@@ -5,6 +5,10 @@ Uses the same auth wall as the Studio download: /download/studio-windows only
 returns the zip when logged in, so we first POST credentials to /login to get a
 session cookie, then pull the installer.
 
+The latest air-platform version is read from the public
+GET /api/studio-version endpoint and written to version.txt, so the analyzer
+tags snapshots with the real reported engine version (no login required).
+
 Environment:
     VORTEX_USER      playvortex.io username (or email)
     VORTEX_PASSWORD  playvortex.io password
@@ -12,10 +16,10 @@ Environment:
 Outputs:
     studio.zip     (zip) raw installer archive
     studio.exe     (pe)  extracted VortexStudio.exe
-    version.txt    (str) reported air-platform version, if the server sends one
+    version.txt    (str) reported air-platform version from /api/studio-version
 """
+import json
 import os
-import re
 import sys
 import zipfile
 
@@ -78,6 +82,18 @@ def extract(exe_path, zip_path):
     fail("no .exe found in studio zip")
 
 
+def fetch_version(session):
+    """Reported engine/air-platform version from the public studio-version API."""
+    try:
+        r = session.get(f"{BASE}/api/studio-version", timeout=20)
+        r.raise_for_status()
+        return r.json().get("version", "")
+    except Exception as e:
+        print(f"[fetch] version fetch failed ({e}); leaving version.txt absent",
+              file=sys.stderr)
+        return ""
+
+
 def main():
     os.makedirs(ROOT, exist_ok=True)
     session = requests.Session()
@@ -85,6 +101,12 @@ def main():
     # prime session with the landing page (sets Cloudflare cookies)
     session.get(f"{BASE}/")
     login(session)
+
+    version = fetch_version(session)
+    if version:
+        with open(os.path.join(ROOT, "version.txt"), "w") as f:
+            f.write(version + "\n")
+        print(f"[fetch] air-platform version {version} -> version.txt", file=sys.stderr)
 
     zip_path = os.path.join(ROOT, "studio.zip")
     exe_path = os.path.join(ROOT, "studio.exe")

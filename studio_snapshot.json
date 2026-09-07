@@ -291,13 +291,13 @@
         "Vector3.new"
       ],
       "methods": [
-        "Magnitude",
-        "zero"
+        "Magnitude"
       ],
       "properties": [
         "X",
         "Y",
-        "Z"
+        "Z",
+        "zero"
       ]
     },
     {
@@ -322,7 +322,9 @@
         "Inverse",
         "Lerp",
         "Dot",
-        "Unit",
+        "Unit"
+      ],
+      "properties": [
         "xAxis",
         "yAxis",
         "zAxis",
@@ -330,8 +332,7 @@
         "qy",
         "qz",
         "qw"
-      ],
-      "properties": []
+      ]
     },
     {
       "name": "Enum",

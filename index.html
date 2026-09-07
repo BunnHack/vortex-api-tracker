@@ -90,33 +90,48 @@
     <script>
       const snap = window.VORTEX_SNAPSHOT;
 
+      // Escape untrusted strings (extracted from a third-party binary) before
+      // they are interpolated into innerHTML, preventing stored XSS.
+      const esc = v => String(v)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+      const tag = (...cls) => (s => `<span class="tag ${cls.join(' ')} member">${esc(s)}</span>`);
+      const meth = tag('meth');
+      const evt = tag('evt');
+      const svcTag = `<span class="tag svc">svc</span>`;
+      const svcTile = `<span class="tag svc">service</span>`;
+
       document.getElementById('ver').textContent =
         (snap.version && snap.version.engine) || 'engine —';
 
       const svc = snap.services || [];
       document.getElementById('svcCount').textContent = svc.length;
       document.getElementById('services').innerHTML =
-        svc.map(s => `<div class="row"><span class="name">${s}</span><span class="tag svc">service</span></div>`).join('');
+        svc.map(s => `<div class="row"><span class="name">${esc(s)}</span>${svcTile}</div>`).join('');
 
       const classes = snap.classes || [];
       document.getElementById('clsCount').textContent = classes.length;
       document.getElementById('classes').innerHTML = classes.map(c => {
         const isSvc = (snap.services || []).includes(c.name);
-        const meth = (c.methods || []).map(m => `<span class="tag meth member">${m}</span>`).join(' ');
-        const evt = (c.events || []).map(e => `<span class="tag evt member">${e}</span>`).join(' ');
-        return `<div class="row"><span class="name">${c.name}</span>` +
-               (isSvc ? '<span class="tag svc">svc</span>' : '') + `</div>` +
-               (meth ? `<div class="row"><span style="width:8px"></span>${meth}</div>` : '') +
-               (evt ? `<div class="row"><span style="width:8px"></span>${evt}</div>` : '');
+        const ms = (c.methods || []).map(meth).join(' ');
+        const evs = (c.events || []).map(evt).join(' ');
+        return `<div class="row"><span class="name">${esc(c.name)}</span>` +
+               (isSvc ? svcTag : '') + `</div>` +
+               (ms ? `<div class="row"><span style="width:8px"></span>${ms}</div>` : '') +
+               (evs ? `<div class="row"><span style="width:8px"></span>${evs}</div>` : '');
       }).join('');
 
       const types = snap.datatypes || [];
       document.getElementById('typeCount').textContent = types.length;
       document.getElementById('types').innerHTML = types.map(t => {
-        const cs = (t.constructors || []).map(c=>`${c}()`).join(' · ');
-        const ms = (t.methods || []).map(m=>`<span class="tag meth member">${m}</span>`).join(' ');
-        const ps = (t.properties || []).map(p=>`<span class="tag evt member">${p}</span>`).join(' ');
-        return `<div class="row"><span class="name">${t.name}</span></div>` +
+        const cs = (t.constructors || []).map(c=>`${esc(c)}()`).join(' · ');
+        const ms = (t.methods || []).map(meth).join(' ');
+        const ps = (t.properties || []).map(evt).join(' ');
+        return `<div class="row"><span class="name">${esc(t.name)}</span></div>` +
                (cs?`<div class="row"><span style="width:8px"></span><span class="member">${cs}</span></div>`:'') +
                (ms?`<div class="row"><span style="width:8px"></span>${ms}</div>`:'') +
                (ps?`<div class="row"><span style="width:8px"></span>${ps}</div>`:'');
@@ -125,8 +140,8 @@
       const enums = Object.entries(snap.enum || {});
       document.getElementById('enumCount').textContent = enums.length;
       document.getElementById('enums').innerHTML = enums.map(([name, vals]) =>
-        `<div class="row"><span class="name">${name}</span></div>` +
-        `<div class="row"><span style="width:8px"></span><span class="member">${vals.join(', ')}</span></div>`
+        `<div class="row"><span class="name">${esc(name)}</span></div>` +
+        `<div class="row"><span style="width:8px"></span><span class="member">${vals.map(esc).join(', ')}</span></div>`
       ).join('');
     </script>
   </body>

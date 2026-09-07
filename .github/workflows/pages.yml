@@ -24,10 +24,17 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Assemble publishable static files
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp snapshot.js _site/
+          cp studio_snapshot.json _site/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
   deploy:
     needs: build

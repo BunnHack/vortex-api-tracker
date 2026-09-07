@@ -13,6 +13,7 @@ import fnmatch
 import glob
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -26,10 +27,20 @@ def load(path):
 
 
 def newest_snapshot():
+    """Newest snapshot by the timestamp embedded in its filename
+    (YYYYMMDD-HHMMSS-...), not by mtime — git checkout makes all mtimes
+    unreliable. Falls back to name sort, then mtime as a last resort."""
     files = glob.glob(os.path.join(SNAP_DIR, "*.json"))
     if not files:
         return None
-    return max(files, key=os.path.getmtime)
+
+    def stamp(p):
+        m = re.search(r"(\d{8})-(\d{6})", os.path.basename(p))
+        if m:
+            return (1, m.group(1), m.group(2))
+        return (0, os.path.basename(p), "")
+
+    return max(files, key=stamp)
 
 
 def keysets(base, new, *field_paths):
@@ -91,10 +102,12 @@ def diff(base, new):
     removed["types"] = sorted(base_type - new_type)
 
     changed_services = sorted(set(new.get("services", [])) - set(base.get("services", [])))
+    removed_services = sorted(set(base.get("services", [])) - set(new.get("services", [])))
     return {
         "added": added,
         "removed": removed,
         "changed_services": changed_services,
+        "removed_services": removed_services,
     }
 
 
@@ -103,7 +116,9 @@ def fmt(result, new_ver, base_ver):
     lines.append(f"API diff  {base_ver}  ->  {new_ver}")
     total = sum(len(result["added"][k]) + len(result["removed"][k]) for k in result["added"])
     lines.append(f"totals: +{sum(len(v) for v in result['added'].values())} "
-                 f"-{sum(len(v) for v in result['removed'].values())} changed={len(result['changed_services'])}")
+                 f"-{sum(len(v) for v in result['removed'].values())} "
+                 f"+services={len(result['changed_services'])} "
+                 f"-services={len(result['removed_services'])}")
     for kind in ["classes", "methods", "events", "enum", "types"]:
         if result["added"][kind]:
             lines.append(f"[+class/member] {kind}: " + ", ".join(result["added"][kind]))
@@ -111,6 +126,8 @@ def fmt(result, new_ver, base_ver):
             lines.append(f"[-class/member] {kind}: " + ", ".join(result["removed"][kind]))
     if result["changed_services"]:
         lines.append("[~services] newly present: " + ", ".join(result["changed_services"]))
+    if result["removed_services"]:
+        lines.append("[-services] no longer present: " + ", ".join(result["removed_services"]))
     return "\n".join(lines)
 
 
@@ -140,7 +157,8 @@ def main():
         with open(args.out, "w") as f:
             json.dump({**result, "base": base_ver, "new": new_ver}, f, indent=2)
         print(f"[diff] wrote {args.out}", file=sys.stderr)
-    has_changes = any(result["added"][k] or result["removed"][k] for k in result["added"])
+    has_changes = (any(result["added"][k] or result["removed"][k] for k in result["added"])
+                   or bool(result["changed_services"] or result["removed_services"]))
     return 0 if has_changes else 1
 
 

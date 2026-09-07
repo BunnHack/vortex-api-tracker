@@ -67,8 +67,8 @@ EXTRA_CLASS_TOKENS = ["Serverscript", "ServerStorage", "StarterGui", "StarterPac
 DATATYPES = {
     "Vector3": {
         "constructors": ["Vector3.new"],
-        "properties": ["X", "Y", "Z"],
-        "methods": ["Magnitude", "zero"],
+        "properties": ["X", "Y", "Z", "zero"],
+        "methods": ["Magnitude"],
     },
     "Color3": {
         "constructors": ["Color3.fromRGB"],
@@ -76,8 +76,8 @@ DATATYPES = {
     },
     "CFrame": {
         "constructors": ["CFrame.fromMatrix"],
-        "methods": ["LookAt", "Inverse", "Lerp", "Dot", "Unit",
-                     "xAxis", "yAxis", "zAxis", "qx", "qy", "qz", "qw"],
+        "methods": ["LookAt", "Inverse", "Lerp", "Dot", "Unit"],
+        "properties": ["xAxis", "yAxis", "zAxis", "qx", "qy", "qz", "qw"],
     },
     "Enum": {
         "methods": ["GetEnumItems", "FromName", "FromValue"],
@@ -129,9 +129,28 @@ def main():
     # also the concatenated "blob" views (registry dumps collide adjacent tokens)
     all_text = ascii_strs + utf16
     blob = norm("".join(all_text))
+    # a symbol must not be a bare substring of a longer identifier to count as
+    # "present" — neither side may be a word char (A-Za-z0-9_) → boundary aware.
+    word = re.compile(r"[A-Za-z0-9_]", re.ASCII)
+
+    def boundary_hit(t, text):
+        """True if `t` occurs in `text` with a word boundary on each side."""
+        if not t:
+            return False
+        start = 0
+        while True:
+            i = text.find(t, start)
+            if i < 0:
+                return False
+            before_ok = i == 0 or not word.match(text[i - 1])
+            after = i + len(t)
+            after_ok = after >= len(text) or not word.match(text[after])
+            if before_ok and after_ok:
+                return True
+            start = i + 1
 
     def seen(*symbols):
-        """True if every symbol appears somewhere in the raw strings (loose)."""
+        """True if any symbol appears as a substring anywhere (loose)."""
         for sym in symbols:
             t = norm(sym)
             if any(t in h for h in haystacks["ascii"]) or t in blob:
@@ -139,12 +158,15 @@ def main():
         return False
 
     def strong(*symbols):
-        """Strict match: appears as its own run (best signal)."""
+        """Strict, boundary-aware match: the whole symbol (not a substring of a
+        longer identifier) appears either as its own run or delimited in the
+        registry blob. This is genuinely stricter than `seen`."""
+        exact = {norm(x) for x in all_text}
         for sym in symbols:
             t = norm(sym)
-            if t in {norm(x) for x in all_text}:
+            if t in exact:
                 return True
-            if t in blob:
+            if boundary_hit(t, blob):
                 return True
         return False
 
@@ -186,7 +208,7 @@ def main():
     for name, spec in DATATYPES.items():
         present = {
             "name": name,
-            "constructors": [c for c in spec.get("constructors", []) if strong(c.split(".")[-1])],
+            "constructors": [c for c in spec.get("constructors", []) if strong(c)],
             "methods": [m for m in spec.get("methods", []) if strong(m)],
             "properties": [p for p in spec.get("properties", []) if strong(p)],
         }
@@ -207,11 +229,19 @@ def main():
         },
     }
 
-    # detect engine version / rust commit from known literals
+    # detect engine version / rust commit from known literals, preferring the
+    # published air-platform version written by fetch.py (version.txt)
     meta = {
         "engine": "engine 2.6.0",
         "build": "",
     }
+    here = os.path.dirname(os.path.abspath(__file__))
+    root = os.path.dirname(here)
+    ver_file = os.path.join(root, "version.txt")
+    if os.path.isfile(ver_file):
+        ver = open(ver_file, encoding="utf-8").read().strip()
+        if ver:
+            meta["engine"] = ver
     m = re.search(r"rustc[ :-]([0-9a-f]{16})", " ".join(ascii_strs))
     if m:
         meta["build"] = f"rustc {m.group(1)}…"

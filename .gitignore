@@ -1,6 +1,5 @@
 studio.exe
 studio.zip
-*.diff.json
 exe_current.bin
 __pycache__/
 *.pyc
