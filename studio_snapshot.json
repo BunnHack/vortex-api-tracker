@@ -45,10 +45,7 @@
     {
       "name": "Players",
       "methods": [],
-      "events": [
-        "PlayerAdded",
-        "PlayerRemoving"
-      ],
+      "events": [],
       "properties": [],
       "services": true
     },
@@ -232,11 +229,7 @@
       "name": "Humanoid",
       "methods": [],
       "events": [
-        "HealthChanged",
-        "Died",
-        "StateChanged",
         "Jumping",
-        "FreeFalling",
         "Running"
       ],
       "properties": [],
@@ -246,7 +239,6 @@
       "name": "Player",
       "methods": [],
       "events": [
-        "CharacterAdded",
         "CharacterRemoving"
       ],
       "properties": [],
@@ -276,10 +268,8 @@
   ],
   "enum": {
     "HumanoidStateType": [
-      "Standing",
       "Running",
       "Jumping",
-      "FreeFalling",
       "Climbing",
       "Dead"
     ]
@@ -287,9 +277,7 @@
   "datatypes": [
     {
       "name": "Vector3",
-      "constructors": [
-        "Vector3.new"
-      ],
+      "constructors": [],
       "methods": [
         "Magnitude"
       ],
@@ -302,9 +290,7 @@
     },
     {
       "name": "Color3",
-      "constructors": [
-        "Color3.fromRGB"
-      ],
+      "constructors": [],
       "methods": [],
       "properties": [
         "R",
@@ -314,11 +300,8 @@
     },
     {
       "name": "CFrame",
-      "constructors": [
-        "CFrame.fromMatrix"
-      ],
+      "constructors": [],
       "methods": [
-        "LookAt",
         "Inverse",
         "Lerp",
         "Dot",
@@ -352,11 +335,9 @@
     "ReplicatedStorage",
     "StarterPlayerScripts",
     "ServerScriptService",
-    "Players",
     "RunService",
     "Debris",
-    "TweenService",
-    "UserInputService"
+    "TweenService"
   ],
   "globals": [
     "game",
@@ -375,7 +356,7 @@
     "renders": []
   },
   "version": {
-    "engine": "engine 2.6.0",
+    "engine": "0.4.1",
     "build": ""
   }
 }
