@@ -1,14 +1,17 @@
 # Vortex API Tracker
 
-**Live report:** https://bunnhack.github.io/vortex-api-tracker/
-
 Watches the **Vortex Studio scripting API** for changes across releases.
 
 Each run logs into playvortex.io, downloads `Studio-windows` (`VortexStudio.exe`),
 and scans the embedded Lua scripting registry for classes, methods, events,
-data types and services. Any addition or removal across versions is surfaced as
-a readable ADDED / REMOVED diff **and** committed as a snapshot — so the history
-of the engine's scripting surface is the git history.
+data types and services. Any addition or removal across versions is committed as
+a snapshot — so the history of the engine's scripting surface is the git history.
+
+> This repo is a **data pipeline only.** There is no frontend / GitHub Pages
+> here anymore. The interactive explorer lives in
+> **[BunnHack/vortex-studio-reference](https://github.com/BunnHack/vortex-studio-reference)**
+> and auto-merges the latest `studio_snapshot.json` on a nightly schedule
+> (see its `bin/sync.js`).
 
 > Symbol presence only. Official call syntax is **not** assumed; we fingerprint
 > the registry strings so diffs are stable, not prose.
@@ -43,7 +46,6 @@ Settings → Secrets and variables → Actions.
 ## Layout
 
 ```
-index.html + snapshot.js      GitHub Pages report (auto-deployed via pages.yml)
 bin/fetch.py             login + download studio-windows zip, extract the PE
 bin/extract_registry.py  PE → scripting-API JSON (classes/methods/events/types)
 bin/diff.py              ADDED / REMOVED between two snapshots
