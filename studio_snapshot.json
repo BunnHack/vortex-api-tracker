@@ -229,6 +229,7 @@
       "name": "Humanoid",
       "methods": [],
       "events": [
+        "Died",
         "Jumping",
         "Running"
       ],
@@ -238,9 +239,7 @@
     {
       "name": "Player",
       "methods": [],
-      "events": [
-        "CharacterRemoving"
-      ],
+      "events": [],
       "properties": [],
       "services": false
     },
@@ -337,7 +336,8 @@
     "ServerScriptService",
     "RunService",
     "Debris",
-    "TweenService"
+    "TweenService",
+    "UserInputService"
   ],
   "globals": [
     "game",
@@ -356,7 +356,7 @@
     "renders": []
   },
   "version": {
-    "engine": "0.4.1",
+    "engine": "0.5.0",
     "build": ""
   }
 }
