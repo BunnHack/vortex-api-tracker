@@ -336,8 +336,7 @@
     "ServerScriptService",
     "RunService",
     "Debris",
-    "TweenService",
-    "UserInputService"
+    "TweenService"
   ],
   "globals": [
     "game",
@@ -356,7 +355,7 @@
     "renders": []
   },
   "version": {
-    "engine": "0.5.0",
+    "engine": "0.5.1",
     "build": ""
   }
 }
