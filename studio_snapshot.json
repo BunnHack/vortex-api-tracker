@@ -229,6 +229,7 @@
       "name": "Humanoid",
       "methods": [],
       "events": [
+        "Died",
         "Jumping",
         "Running"
       ],
@@ -302,6 +303,7 @@
       "name": "CFrame",
       "constructors": [],
       "methods": [
+        "LookAt",
         "Inverse",
         "Lerp",
         "Dot",
@@ -354,10 +356,12 @@
   "absent": {
     "gui": [],
     "http": [],
-    "renders": []
+    "renders": [
+      "RenderStepped"
+    ]
   },
   "version": {
-    "engine": "0.5.3",
+    "engine": "0.6.0",
     "build": ""
   }
 }
