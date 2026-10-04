@@ -229,8 +229,11 @@
       "name": "Humanoid",
       "methods": [],
       "events": [
+        "HealthChanged",
         "Died",
+        "StateChanged",
         "Jumping",
+        "FreeFalling",
         "Running"
       ],
       "properties": [],
@@ -240,6 +243,7 @@
       "name": "Player",
       "methods": [],
       "events": [
+        "CharacterAdded",
         "CharacterRemoving"
       ],
       "properties": [],
@@ -271,6 +275,7 @@
     "HumanoidStateType": [
       "Running",
       "Jumping",
+      "FreeFalling",
       "Climbing",
       "Dead"
     ]
@@ -361,7 +366,7 @@
     ]
   },
   "version": {
-    "engine": "0.6.0",
+    "engine": "0.6.1",
     "build": ""
   }
 }
