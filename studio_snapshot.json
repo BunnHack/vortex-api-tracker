@@ -276,7 +276,6 @@
       "Running",
       "Jumping",
       "FreeFalling",
-      "Climbing",
       "Dead"
     ]
   },
@@ -342,6 +341,7 @@
     "ReplicatedStorage",
     "StarterPlayerScripts",
     "ServerScriptService",
+    "Players",
     "RunService",
     "Debris",
     "TweenService",
@@ -366,7 +366,7 @@
     ]
   },
   "version": {
-    "engine": "0.6.1",
+    "engine": "0.7.0",
     "build": ""
   }
 }
