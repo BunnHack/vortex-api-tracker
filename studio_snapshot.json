@@ -307,7 +307,6 @@
       "name": "CFrame",
       "constructors": [],
       "methods": [
-        "LookAt",
         "Inverse",
         "Lerp",
         "Dot",
@@ -359,14 +358,21 @@
     "print"
   ],
   "absent": {
-    "gui": [],
-    "http": [],
+    "gui": [
+      "ScreenGui",
+      "TextButton",
+      "TextLabel",
+      "ImageLabel"
+    ],
+    "http": [
+      "DataStore"
+    ],
     "renders": [
       "RenderStepped"
     ]
   },
   "version": {
-    "engine": "0.7.2",
+    "engine": "0.8.0",
     "build": ""
   }
 }
