@@ -343,8 +343,7 @@
     "Players",
     "RunService",
     "Debris",
-    "TweenService",
-    "UserInputService"
+    "TweenService"
   ],
   "globals": [
     "game",
@@ -372,7 +371,7 @@
     ]
   },
   "version": {
-    "engine": "0.8.0",
+    "engine": "0.8.1",
     "build": ""
   }
 }
