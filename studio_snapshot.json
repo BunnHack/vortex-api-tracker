@@ -359,6 +359,7 @@
   "absent": {
     "gui": [
       "ScreenGui",
+      "GuiObject",
       "TextButton",
       "TextLabel",
       "ImageLabel"
@@ -371,7 +372,7 @@
     ]
   },
   "version": {
-    "engine": "0.8.1",
+    "engine": "0.9.1",
     "build": ""
   }
 }
