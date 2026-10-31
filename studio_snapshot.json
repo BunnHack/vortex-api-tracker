@@ -343,7 +343,8 @@
     "Players",
     "RunService",
     "Debris",
-    "TweenService"
+    "TweenService",
+    "UserInputService"
   ],
   "globals": [
     "game",
@@ -359,7 +360,6 @@
   "absent": {
     "gui": [
       "ScreenGui",
-      "GuiObject",
       "TextButton",
       "TextLabel",
       "ImageLabel"
@@ -372,7 +372,7 @@
     ]
   },
   "version": {
-    "engine": "0.9.1",
+    "engine": "0.9.3",
     "build": ""
   }
 }
