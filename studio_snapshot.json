@@ -230,10 +230,6 @@
       "methods": [],
       "events": [
         "HealthChanged",
-        "Died",
-        "StateChanged",
-        "Jumping",
-        "FreeFalling",
         "Running"
       ],
       "properties": [],
@@ -242,10 +238,7 @@
     {
       "name": "Player",
       "methods": [],
-      "events": [
-        "CharacterAdded",
-        "CharacterRemoving"
-      ],
+      "events": [],
       "properties": [],
       "services": false
     },
@@ -274,8 +267,6 @@
   "enum": {
     "HumanoidStateType": [
       "Running",
-      "Jumping",
-      "FreeFalling",
       "Dead"
     ]
   },
@@ -325,11 +316,7 @@
     {
       "name": "Enum",
       "constructors": [],
-      "methods": [
-        "GetEnumItems",
-        "FromName",
-        "FromValue"
-      ],
+      "methods": [],
       "properties": []
     }
   ],
@@ -360,6 +347,7 @@
   "absent": {
     "gui": [
       "ScreenGui",
+      "GuiObject",
       "TextButton",
       "TextLabel",
       "ImageLabel"
@@ -372,7 +360,7 @@
     ]
   },
   "version": {
-    "engine": "0.9.5",
+    "engine": "0.10.0",
     "build": ""
   }
 }
