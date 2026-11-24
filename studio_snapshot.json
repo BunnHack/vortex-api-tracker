@@ -230,6 +230,7 @@
       "methods": [],
       "events": [
         "HealthChanged",
+        "Died",
         "Running"
       ],
       "properties": [],
@@ -360,7 +361,7 @@
     ]
   },
   "version": {
-    "engine": "0.10.0",
+    "engine": "0.10.1",
     "build": ""
   }
 }
